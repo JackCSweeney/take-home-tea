@@ -8,6 +8,7 @@ RSpec.describe "Update Subscription via HTTP Patch Request" do
 
     @headers = {"CONTENT_TYPE" => "application/json"}
     @body = {status: 0}
+    @bad_body = {title: ""}
   end
 
   describe '#happy path' do
@@ -43,6 +44,36 @@ RSpec.describe "Update Subscription via HTTP Patch Request" do
       expect(attributes[:frequency]).to eq(12)
       expect(attributes).to have_key(:status)
       expect(attributes[:status]).to eq("cancelled")
+    end
+  end
+
+  describe '#sad path' do
+    it 'responds with the correct error message if given an invalid id' do
+      patch "/api/v0/subscriptions/123123123123", headers: @headers, params: JSON.generate(@body)
+
+      expect(response).not_to be_successful
+      expect(response.status).to eq(404)
+
+      result = JSON.parse(response.body, symbolize_names: true)
+
+      expect(result).to have_key(:errors)
+      expect(result[:errors]).to be_a(Array)
+      expect(result[:errors].first).to be_a(Hash)
+      expect(result[:errors].first[:detail]).to eq("Couldn't find Subscription with 'id'=123123123123")
+    end
+
+    it 'responds with the correct error message if trying to update a record with blank attributes' do
+      patch "/api/v0/subscriptions/#{@subscription.id}", headers: @headers, params: JSON.generate(@bad_body)
+
+      expect(response).not_to be_successful
+      expect(response.status).to eq(400)
+
+      result = JSON.parse(response.body, symbolize_names: true)
+
+      expect(result).to have_key(:errors)
+      expect(result[:errors]).to be_a(Array)
+      expect(result[:errors].first).to be_a(Hash)
+      expect(result[:errors].first[:detail]).to eq("Validation failed: Title can't be blank")
     end
   end
 end

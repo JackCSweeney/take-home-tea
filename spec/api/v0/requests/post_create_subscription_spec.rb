@@ -52,7 +52,7 @@ RSpec.describe "Create New Subscription via HTTP Request" do
       post "/api/v0/subscriptions", headers: @headers, params: JSON.generate(@bad_body_1)
 
       expect(response).not_to be_successful
-      expect(response.status).to eq(422)
+      expect(response.status).to eq(400)
 
       result = JSON.parse(response.body, symbolize_names: true)
 
@@ -64,7 +64,7 @@ RSpec.describe "Create New Subscription via HTTP Request" do
       post "/api/v0/subscriptions", headers: @headers, params: JSON.generate(@bad_body_2)
 
       expect(response).not_to be_successful
-      expect(response.status).to eq(422)
+      expect(response.status).to eq(400)
 
       result = JSON.parse(response.body, symbolize_names: true)
 
@@ -82,7 +82,7 @@ RSpec.describe "Create New Subscription via HTTP Request" do
       post "/api/v0/subscriptions", headers: @headers, params: JSON.generate(@body)
 
       expect(response).not_to be_successful
-      expect(response.status).to eq(422)
+      expect(response.status).to eq(400)
 
       result = JSON.parse(response.body, symbolize_names: true)
 
