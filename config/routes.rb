@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   # root "posts#index"
   namespace :api do
     namespace :v0 do 
-      resources :subscriptions, only: [:create]
+      resources :subscriptions, only: [:create, :update]
     end
   end
 end
