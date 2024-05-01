@@ -18,7 +18,7 @@ RSpec.describe "Get All Customer Subscriptions" do
 
   describe '#happy path' do
     it 'responds with a collection of all of a customers subscriptions, active and cancelled' do
-      get "/api/v0/customers/#{@customer_1.id}/subscriptions", headers: @headers
+      get "/api/v0/customers/subscriptions?customer_id=#{@customer_1.id}", headers: @headers
 
       expect(response).to be_successful
       expect(response.status).to eq(200)
@@ -30,12 +30,17 @@ RSpec.describe "Get All Customer Subscriptions" do
       
       data = result[:data]
 
-      expect(data).to have_key(:active)
-      expect(data[:active]).to be_a(Array)
-      expect(data).to have_key(:cancelled)
-      expect(data[:cancelled]).to be_a(Array)
+      expect(data).to have_key(:subscriptions)
+      expect(data[:subscriptions]).to be_a(Hash)
 
-      active = data[:active]
+      subscriptions = data[:subscriptions]
+
+      expect(subscriptions).to have_key(:active)
+      expect(subscriptions[:active]).to be_a(Array)
+      expect(subscriptions).to have_key(:cancelled)
+      expect(subscriptions[:cancelled]).to be_a(Array)
+
+      active = subscriptions[:active]
 
       expect(active.length).to eq(2)
       expect(active[0]).to have_key(:title)
@@ -63,7 +68,7 @@ RSpec.describe "Get All Customer Subscriptions" do
       expect(active[1]).to have_key(:customer_id)
       expect(active[1][:customer_id]).to eq(@subscription_3.customer_id)
 
-      cancelled = data[:cancelled]
+      cancelled = subscriptions[:cancelled]
 
       expect(cancelled[0]).to have_key(:title)
       expect(cancelled[0][:title]).to eq(@subscription_2.title)
