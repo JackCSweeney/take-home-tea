@@ -86,8 +86,18 @@ RSpec.describe "Get All Customer Subscriptions" do
   end
 
   describe '#sad path' do
-    it '' do
+    it 'will return the correct error response if given an id that does not exist' do
+      get "/api/v0/customers/subscriptions?customer_id=123123123123", headers: @headers
 
+      expect(response).not_to be_successful
+      expect(response.status).to eq(404)
+
+      result = JSON.parse(response.body, symbolize_names: true)
+
+      expect(result).to have_key(:errors)
+      expect(result[:errors]).to be_a(Array)
+      expect(result[:errors].first).to have_key(:detail)
+      expect(result[:errors].first[:detail]).to eq("Couldn't find Customer with 'id'=123123123123")
     end
   end
 end
